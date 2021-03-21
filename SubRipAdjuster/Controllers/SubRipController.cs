@@ -7,14 +7,17 @@ using System.IO;
 using System.Windows.Forms;
 using System.Threading;
 using System.Web;
+using SubRipAdjuster.DAL;
+using System.Text;
 
 namespace SubRipAdjuster.Controllers
 {
     public class SubRipController : Controller
     {
+        private SubripDatabaseContext db = new SubripDatabaseContext();
         public ActionResult SubRipForm()
         {
-            return View();
+            return View("SubRipForm");
         }
 
         [HttpPost]
@@ -50,39 +53,15 @@ namespace SubRipAdjuster.Controllers
 
             try
             {
-                SubRipFile srf = new SubRipFile(file);
+                SubRipFile srf = new SubRipFile(SubRipFile.FileToByte(file));
                 srf.Add(offset);
 
-                Thread t = new Thread((ThreadStart)delegate
-                {
-                    SaveFileDialog sfd = new SaveFileDialog();
-                    sfd.Filter = "SubRip Files (*.srt)|*.srt|All files (*.*)|*.*";
-                    sfd.DefaultExt = ".srt";
-                    sfd.FilterIndex = 2;
-                    sfd.RestoreDirectory = true;
+                Tuple<String, String, String> status = srf.OpenDialogSaveAs();
+                ModelState.AddModelError(status.Item1, status.Item2);
 
-                    if (sfd.ShowDialog() == DialogResult.OK)
-                    {
-                        srf.SaveAs(Path.GetFullPath(sfd.FileName));
-                        ModelState.AddModelError("Sucesso", "Arquivo salvo com sucesso em: " + Path.GetFullPath(sfd.FileName));
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("Error", "Problema ao acessar diretorio" + Path.GetFullPath(sfd.FileName));
-                    }
-                });
-
-                t.TrySetApartmentState(ApartmentState.STA);
-
-                //start the thread 
-                t.Start();
-
-                // Wait for thread to get started 
-                while (!t.IsAlive) { Thread.Sleep(1); }
-                // Wait a tick more
-                Thread.Sleep(1);
-                //wait for the dialog thread to finish 
-                t.Join();
+                //Adiciona ao banco
+                db.ArquiveHistory.Add(new ArquiveHistory(Path.GetFileName(status.Item3), DateTime.Now, SubRipFile.StringToByte(srf.Render()), offset));
+                db.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -90,6 +69,24 @@ namespace SubRipAdjuster.Controllers
             }
             return View();
 
+        }
+
+        public ActionResult SubRipHistory()
+        {
+            return View(db.ArquiveHistory.ToList());
+        }
+
+        [AcceptVerbs(HttpVerbs.Get)]
+        public ActionResult SubRipHistory(int? id)
+        {
+            if (id > 0)
+            {
+                ArquiveHistory arquive = db.ArquiveHistory.Find(id);
+                SubRipFile srf = new SubRipFile(arquive.ArquiveFile);
+                Tuple<String, String, String> status = srf.OpenDialogSaveAs();
+                ModelState.AddModelError(status.Item1, status.Item2);
+            }
+            return View(db.ArquiveHistory.ToList());
         }
     }
 }

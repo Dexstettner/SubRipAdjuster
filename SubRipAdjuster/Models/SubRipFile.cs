@@ -5,6 +5,8 @@ using System.Web;
 using System.Text.RegularExpressions;
 using System.Text;
 using System.IO;
+using System.Windows.Forms;
+using System.Threading;
 
 namespace SubRipAdjuster.Models
 {
@@ -22,16 +24,12 @@ namespace SubRipAdjuster.Models
         /// Parses an .srt file.
         /// </summary>
         /// <param name="path">Path to the file</param>
-        public SubRipFile(HttpPostedFileBase file)
+        public SubRipFile(byte[] binData)
         {
             try
             {
-                BinaryReader b = new BinaryReader(file.InputStream);
-                byte[] binData = b.ReadBytes(file.ContentLength);
-
-                string result = System.Text.Encoding.UTF8.GetString(binData);
-
-                string[] lines = Regex.Replace(result, "\r\n?", "\n").Split('\n');
+                String file = System.Text.Encoding.UTF8.GetString(binData);
+                string[] lines = Regex.Replace(file, "\r\n?", "\n").Split('\n');
 
                 int state = 0;
                 bool wasEmptyLine = false;
@@ -76,7 +74,7 @@ namespace SubRipAdjuster.Models
                             break;
                     }
                 }
-                if (currentSubtitle != null) 
+                if (currentSubtitle != null)
                     Subtitles.Add(currentSubtitle);
             }
             catch (Exception ex)
@@ -93,8 +91,8 @@ namespace SubRipAdjuster.Models
         public string Render()
         {
             StringBuilder sb = new StringBuilder();
-            
-            for (int i = 0; i < Subtitles.Count; i++) 
+
+            for (int i = 0; i < Subtitles.Count; i++)
                 sb.Append(Subtitles[i].ToString());
 
             return sb.ToString();
@@ -110,11 +108,62 @@ namespace SubRipAdjuster.Models
         }
 
         /// <summary>
-        /// Writes the render of this object to specified path.
+        /// Writes the render of this file with a SaveFileDialog in a new thread.
         /// </summary>
-        public void SaveAs(string path)
+        public Tuple<String, String, String> OpenDialogSaveAs()
         {
-            File.WriteAllText(path, Render());
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            Tuple<String, String, String> status = new Tuple<String, String, String>("","", "");
+
+            Thread t = new Thread((ThreadStart)delegate
+            {
+                sfd.Filter = "SubRip Files (*.srt)|*.srt|All files (*.*)|*.*";
+                sfd.DefaultExt = ".srt";
+                sfd.FilterIndex = 2;
+                sfd.RestoreDirectory = true;
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    File.WriteAllText(sfd.FileName, Render());
+                    status = new Tuple<String, String, String>("Sucesso", "Arquivo salvo com sucesso em: " + Path.GetFullPath(sfd.FileName), sfd.FileName);
+                }
+                else
+                {
+                    status = new Tuple<String, String, String>("Error", "Ação salvar arquivo abortado","");
+                }
+            });
+
+            t.TrySetApartmentState(ApartmentState.STA);
+
+            //start the thread 
+            t.Start();
+
+            // Wait for thread to get started 
+            while (!t.IsAlive) { Thread.Sleep(1); }
+            // Wait a tick more
+            Thread.Sleep(1);
+            //wait for the dialog thread to finish 
+            t.Join();
+
+            return status;
         }
+
+        /// <summary>
+        /// Convert a string to byte array( byte[] )
+        /// </summary>
+        public static byte[] StringToByte(String stringData)
+        {
+            return Encoding.UTF8.GetBytes(stringData);
+        }
+        /// <summary>
+        /// Convert a HttpPostedFileBase to byte array( byte[] )
+        /// </summary>
+        public static byte[] FileToByte(HttpPostedFileBase file)
+        {
+            BinaryReader b = new BinaryReader(file.InputStream);
+            return b.ReadBytes(file.ContentLength);
+        }
+
     }
 }

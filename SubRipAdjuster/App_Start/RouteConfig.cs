@@ -14,6 +14,12 @@ namespace SubRipAdjuster
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                name: "SubRipHistory",
+                url: "{controller}/{action}/{id}",
+                defaults: new { controller = "SubRipController", action = "SubRipHistory", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "SubRipController", action = "SubRipForm", id = UrlParameter.Optional }
