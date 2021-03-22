@@ -19,15 +19,15 @@ You have to have installed before the software Visual Studio Code 2019 and its d
 In that project was used:
 
 - C#
-  As core back languge.
+  -As core back languge.
 - Asp.Net
-  Framework to make web application.
+  -Framework to make web application.
 - Razor 
-  Framework to use controllers and models in views application.
+  -Framework to use controllers and models in views application.
 - MVC 5
-  Project structure.
+  -Project structure.
 - Entity Framework
-  To generate access database based on project models
+  -To generate access database based on project models
 
 # Contact
 Kevin Rochas Stettner  
