@@ -10,7 +10,7 @@
 Web application to adjust any subtitle file of type SubRip (.srt).
 
 # How to use
-Download de all the files as zip, or the hole branch and open using Visual Studio 2019 as a project. If you want to compile feel free using Visual Studio 2019.
+Download de all the files as zip, or the role branch and open using Visual Studio 2019 as a project. If you want to compile feel free using Visual Studio 2019.
 
 # Pre requisites
 You have to have installed before the software Visual Studio Code 2019 and its dependences provides by microsoft.
