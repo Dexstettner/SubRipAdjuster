@@ -26,6 +26,8 @@ In that project was used:
   Framework to use controllers and models in views application.
 - MVC 5
   Project structure.
+- Entity Framework
+  To generate access database based on project models
 
 # Contact
 Kevin Rochas Stettner  
