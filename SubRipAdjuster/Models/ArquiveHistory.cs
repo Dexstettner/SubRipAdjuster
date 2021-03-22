@@ -29,6 +29,8 @@ namespace SubRipAdjuster.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get => id; set => id = value; }
         public string ArquiveName { get => arquiveName; set => arquiveName = value; }
+
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd hh:mm:ss}", ApplyFormatInEditMode = true)]
         [DataType(DataType.Date)]
         public DateTime InsertDate { get => insertDate; set => insertDate = value; }
         public byte[] ArquiveFile { get => arquiveFile; set => arquiveFile = value; }
