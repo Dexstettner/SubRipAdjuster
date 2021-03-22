@@ -19,7 +19,7 @@ You have to have installed before the software Visual Studio Code 2019 and its d
 In that project was used:
 
 - C#  
-  -As core back languge.
+  As core back languge.
 - Asp.Net  
   Framework to make web application.
 - Razor  
