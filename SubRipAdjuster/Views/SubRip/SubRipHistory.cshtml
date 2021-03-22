@@ -43,9 +43,9 @@
     <table class="table table-striped table-hover">
         <thead class="thead-dark">
             <tr>
-                <th scope="col">Insert Data </th>
-                <th scope="col">File Name</th>
-                <th scope="col">Milliseconds</th>
+                <th scope="col">@Html.LabelFor(m => m.FirstOrDefault().InsertDate)</th>
+                <th scope="col">@Html.LabelFor(m => m.FirstOrDefault().ArquiveName)</th>
+                <th scope="col">@Html.LabelFor(m => m.FirstOrDefault().Ms)</th>
                 <th scope="col">Download</th>
             </tr>
         </thead>
