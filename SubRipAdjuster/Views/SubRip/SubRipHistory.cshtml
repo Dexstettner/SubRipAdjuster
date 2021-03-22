@@ -39,7 +39,7 @@
 }))
 {
     @Html.AntiForgeryToken()
-
+    @Html.HiddenFor(m => m.FirstOrDefault().Id)
     <table class="table table-striped table-hover">
         <thead class="thead-dark">
             <tr>
@@ -57,12 +57,19 @@
                     <th scope="row">@Html.DisplayFor(modelItem => item.InsertDate) </th>
                     <td>@Html.DisplayFor(modelItem => item.ArquiveName)</td>
                     <td>@Html.DisplayFor(modelItem => item.Ms)</td>
-                    <td>@Html.ActionLink("Download", "SubRipHistory", "SubRip", new { id = item.Id }, null)</td>
+                    <td><a id = "@item.Id" href="#" onclick="submitId();">Download</a></td>
                 </tr>
             }
         </tbody>
     </table>
 }
+<script type="text/javascript">
+    function submitId() {
+        document.getElementById("Id").setAttribute("value", event.currentTarget.id);
+        document.forms[0].submit();
+        return false;
+    }
+</script>
 
 <div>
     @Html.ActionLink("Back to List", "SubRipForm")

@@ -73,11 +73,11 @@ namespace SubRipAdjuster.Controllers
 
         public ActionResult SubRipHistory()
         {
-            return View(db.ArquiveHistory.ToList());
+            return View("SubRipHistory", db.ArquiveHistory.ToList());
         }
 
-        [AcceptVerbs(HttpVerbs.Get)]
-        public ActionResult SubRipHistory(int? id)
+        [HttpPost]
+        public ActionResult SubRipHistory(int id)
         {
             if (id > 0)
             {
