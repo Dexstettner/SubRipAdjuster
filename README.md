@@ -27,7 +27,7 @@ In that project was used:
 - MVC 5  
   Project structure.
 - Entity Framework  
-  To generate access database based on project models
+  To generate database based on project models
 
 # Contact
 Kevin Rochas Stettner  
